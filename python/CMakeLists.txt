@@ -20,13 +20,19 @@ message(STATUS "Python3_EXECUTABLE: ${Python3_EXECUTABLE}")
 message(STATUS "Python3_INCLUDE_DIRS: ${Python3_INCLUDE_DIRS}")
 message(STATUS "Python3_LIBRARIES: ${Python3_LIBRARIES}")
 
+pybind11_add_module(${PROJECT_NAME} bindings.cpp)
 
-add_library(${PROJECT_NAME} SHARED bindings.cpp)
+# add_library(${PROJECT_NAME} SHARED bindings.cpp)
 
-set_target_properties(${PROJECT_NAME} PROPERTIES
-    PREFIX ""
-    SUFFIX ".so"
-)
+# set_target_properties(${PROJECT_NAME} PROPERTIES
+#     PREFIX ""
+#     SUFFIX ${PYTHON3_MODULE_EXTENSION}
+# )
+
+# set_target_properties(${PROJECT_NAME} PROPERTIES
+#     PREFIX ""
+#     SUFFIX ".so"
+# )
 target_include_directories(${PROJECT_NAME} PRIVATE
     ${Python3_INCLUDE_DIRS}
     ${pybind11_INCLUDE_DIRS}
@@ -34,19 +40,8 @@ target_include_directories(${PROJECT_NAME} PRIVATE
 
 target_include_directories(${PROJECT_NAME} PUBLIC "${PATH_PAC}/include")
 
-target_link_libraries(${PROJECT_NAME} pac ${Python3_LIBRARIES})
+target_link_libraries(${PROJECT_NAME} PRIVATE pac)
 
-# Install rules
-install(TARGETS ${PROJECT_NAME}
-    DESTINATION lib
+set_target_properties(pacpy PROPERTIES
+    INSTALL_RPATH "$ORIGIN"
 )
-
-function(install_with_symlink_and_target lib dest_dir)
-    execute_process(COMMAND readlink -f ${lib} OUTPUT_VARIABLE real_file OUTPUT_STRIP_TRAILING_WHITESPACE)
-    install(FILES ${lib} DESTINATION ${dest_dir})
-    install(FILES ${real_file} DESTINATION ${dest_dir})
-endfunction()
-
-foreach(lib ${Python3_LIBRARIES})
-    install_with_symlink_and_target(${lib} lib)
-endforeach()
