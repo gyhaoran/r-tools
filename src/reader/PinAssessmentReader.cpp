@@ -38,7 +38,7 @@ void printMacros(const LefMacroDscp& macro)
 }
 
 std::string pinAccessCheck(const LefDscp& lef, bool needExpand) {
-    std::string res = "[\n";
+    std::string res = "{\n";
     for (auto& macro : lef.clsLefMacroDscps)
     {
         MacroScore macroScore(macro, needExpand);
@@ -52,7 +52,7 @@ std::string pinAccessCheck(const LefDscp& lef, bool needExpand) {
         res = res.substr(0, res.size() - 3);
     }
 
-    res += "\n]";
+    res += "\n}";
     return res;
 }
 

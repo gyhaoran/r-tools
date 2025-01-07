@@ -17,14 +17,15 @@ namespace
 
 std::string calcMacroCost(const LefDscp& lef, double minWidth) {
     std::stringstream ss;
-    ss << "[\n";
+    ss << "{\n";
     for (auto& macro : lef.clsLefMacroDscps)
     {
         MacroCost macroCost(macro);
         auto cost = macroCost.calc();
-        ss << "  {\"" << macro.clsMacroName << "\": " << cost << "}\n";
+        ss << "  \"" << macro.clsMacroName << "\": " << cost << ",\n";
+        // ss << "  {\"" << macro.clsMacroName << "\": " << cost << "}\n";
     }
-    ss << "]";
+    ss << "}";
     return ss.str();
 }
 

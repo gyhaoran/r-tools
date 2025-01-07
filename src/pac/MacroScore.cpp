@@ -326,19 +326,19 @@ void MacroScore::print()
 
 std::string MacroScore::toString() {
     std::stringstream ss;
-    ss << "  {\"" << macro_.clsMacroName << "\": [";
+    ss << "  \"" << macro_.clsMacroName << "\": {";
 
     int end = pinScores_.size() - 1;
     for (int i = 0; i < end; ++i) {
         auto& pin = pinScores_[i];
-        ss << "{\"" << pin.name() << "\": " << pin.score(maxPinLength_, maxExpand_) << "}, ";
+        ss << "\"" << pin.name() << "\": " << pin.score(maxPinLength_, maxExpand_) << ", ";
     }
     if (end >= 0) {
         auto& pin = pinScores_[end];
-        ss << "{\"" << pin.name() << "\": " << pin.score(maxPinLength_, maxExpand_) << "}";
+        ss << "\"" << pin.name() << "\": " << pin.score(maxPinLength_, maxExpand_);
     }
 
-    ss << "]}";
+    ss << "}";
 
     return ss.str();
 }
