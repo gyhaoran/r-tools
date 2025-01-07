@@ -18,12 +18,20 @@ namespace
 std::string calcMacroCost(const LefDscp& lef, double minWidth) {
     std::stringstream ss;
     ss << "{\n";
-    for (auto& macro : lef.clsLefMacroDscps)
-    {
+
+    int end = lef.clsLefMacroDscps.size() - 1;
+    for (int i = 0; i < end; ++i) {
+        auto& macro = lef.clsLefMacroDscps[i];
         MacroCost macroCost(macro);
         auto cost = macroCost.calc();
         ss << "  \"" << macro.clsMacroName << "\": " << cost << ",\n";
-        // ss << "  {\"" << macro.clsMacroName << "\": " << cost << "}\n";
+    }
+    
+    if (end >= 0) {
+        auto& macro = lef.clsLefMacroDscps[end];
+        MacroCost macroCost(macro);
+        auto cost = macroCost.calc();
+        ss << "  \"" << macro.clsMacroName << "\": " << cost << "\n";
     }
     ss << "}";
     return ss.str();
