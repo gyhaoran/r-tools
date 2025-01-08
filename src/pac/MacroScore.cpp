@@ -130,6 +130,11 @@ double calculateMaxExpansion(const std::string& metaName, const DoubleRectangle&
     return maxExpansion - increment; // Subtract the last increment that caused failure
 }
 
+bool isMetaLayer(const std::string& layer) {
+    auto start = layer.substr(0, 1);
+    return start == "M" || start == "m";
+}
+
 PinMetaExpand calcExpansion(const LefPinDscp& pin, 
                             const std::vector<LefObsDscp>& obstructions, 
                             const std::vector<LefPinDscp>& otherPins,
@@ -140,7 +145,7 @@ PinMetaExpand calcExpansion(const LefPinDscp& pin,
     for (const auto& port : pin.clsPorts) {
         for (const auto& geo : port.clsLefPortGeoDscp) {
             auto& metaName = geo.clsMetalName;
-            if (metaName.substr(0, 1) != "M") {
+            if (!isMetaLayer(metaName)) {
                 continue;
             }
             for (const auto& rect : geo.clsBounds) {
@@ -186,16 +191,11 @@ bool isBoundPin(const LefMacroDscp& macro, const DoubleRectangle& bound)
 }
 
 int getMetalLayerIndex(const std::string& metalName) {
-    std::regex mRegex("^M(\\d+)$");
-    std::regex metaRegex("^Metal(\\d+)$"); 
-
+    std::regex combinedRegex("^(M|Metal|metal)(\\d+)$");
     std::smatch match;
-    if (std::regex_match(metalName, match, mRegex)) {
-        int layerIndex = std::stoi(match[1]);
-        return layerIndex;
-    } else if (std::regex_match(metalName, match, metaRegex)) {
-        int layerIndex = std::stoi(match[1]);
-        return layerIndex;
+
+    if (std::regex_match(metalName, match, combinedRegex) && match.size() > 2) {
+        return std::stoi(match[2].str());
     }
     return 0;
 }

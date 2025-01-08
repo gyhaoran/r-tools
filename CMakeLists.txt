@@ -117,4 +117,8 @@ target_link_libraries(${PROJECT_NAME} ${Boost_LIBRARIES})
 # target_include_directories(${PROJECT_NAME} PUBLIC ${PNG_INCLUDE_DIR})
 # target_link_libraries(${PROJECT_NAME} ${PNG_LIBRARY})
 
+add_executable(main main.cpp)
+target_include_directories(main PUBLIC "${PATH_PAC}/include")
+target_link_libraries(main ${PROJECT_NAME})
+
 add_subdirectory(python)
