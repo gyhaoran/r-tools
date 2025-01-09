@@ -2,6 +2,7 @@
 #include "rsyn/io/parser/lef_def/LEFControlParser.h"
 #include <cmath>
 #include <iostream>
+#include <algorithm>
 
 namespace Rsyn
 {
@@ -12,8 +13,15 @@ constexpr double ALPHA = 1.0;
 constexpr double BETA = 1.0;
 constexpr double GAMA = 1.0;
 
+std::string toUpper(const std::string& str) {
+    std::string upperStr = str;
+    std::transform(upperStr.begin(), upperStr.end(), upperStr.begin(), ::toupper);
+    return upperStr;
+}
+
 bool isPowerPin(const LefPinDscp& pin) {
-    return pin.clsPinName == "VSS" || pin.clsPinName == "VDD";
+    auto useName = toUpper(pin.clsPinUse);
+    return useName == "POWER" || useName == "GROUND" || pin.clsPinName == "VSS" || pin.clsPinName == "VDD";
 }
 
 double calcSmallestBoundingBoxArea(const LefPinDscp& pin1, const LefPinDscp& pin2) {
@@ -71,7 +79,13 @@ double MacroCost::calc() {
 }
 
 double MacroCost::pec() {
-    return macro_.clsPins.size();
+    int num = 0;
+    for (auto& pin : macro_.clsPins) {
+        if (!isPowerPin(pin)) {
+            ++num;
+        }
+    }
+    return num;
 }
 
 double MacroCost::pac() {
